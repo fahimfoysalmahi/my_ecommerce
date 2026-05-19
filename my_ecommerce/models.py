@@ -17,3 +17,18 @@ class Product(models.Model):
             discount = ((self.original_price - self.price) / self.original_price) * 100
             return round(discount)
         return 0
+        from django.db import models
+from django.contrib.auth.models import User
+
+# --- তোর আগের মডেলগুলো এখানে ওপরে থাকবে ---
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, unique=True)
+    status = models.CharField(max_length=20, default='Pending') # Pending, Success, Failed, Cancelled
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.transaction_id} - {self.status}"
+    

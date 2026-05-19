@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
                 ('price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('original_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)), # এখানেও যোগ হলো
+                ('original_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
                 ('description', models.TextField(blank=True, null=True)),
                 ('image', models.ImageField(blank=True, null=True, upload_to='products/')),
                 ('category', models.CharField(blank=True, max_length=100, null=True)),

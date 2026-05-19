@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>পেমেন্ট সফল হয়েছে!</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #e8f5e9;">
+
+    <div style="background: white; padding: 30px; display: inline-block; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-top: 5px solid #4caf50;">
+        <h2 style="color: #4caf50;">আলহামদুলিল্লাহ, পেমেন্ট সফল হয়েছে!</h2>
+        <p style="font-size: 18px;">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে ভাই।</p>
+        <hr>
+        <p><strong>ট্রানজেকশন আইডি:</strong> {{ trx_id }}</p>
+        <p><strong>পরিশোধিত টাকা:</strong> ৳{{ amount }}</p>
+        <br>
+        <a href="{% url 'home' %}" style="color: #2196f3; text-decoration: none; font-weight: bold;">হোম পেজে ফিরে যান</a>
+    </div>
+
+</body>
+</html>

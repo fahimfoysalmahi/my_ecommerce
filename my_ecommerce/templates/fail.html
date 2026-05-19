@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>পেমেন্ট ব্যর্থ হয়েছে</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #ffebee;">
+
+    <div style="background: white; padding: 30px; display: inline-block; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); border-top: 5px solid #f44336;">
+        <h2 style="color: #f44336;">দুঃখিত ভাই, পেমেন্ট ব্যর্থ হয়েছে!</h2>
+        <p style="font-size: 16px;">অনুগ্রহ করে আপনার কার্ড বা অ্যাকাউন্টের ব্যালেন্স চেক করে আবার চেষ্টা করুন।</p>
+        <hr>
+        <p><strong>অর্ডার আইডি:</strong> {{ trx_id }}</p>
+        <br>
+        <a href="{% url 'checkout' %}" style="background: #f44336; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">আবার চেষ্টা করুন</a>
+    </div>
+
+</body>
+</html>

@@ -1,23 +1,22 @@
-from django.contrib import admin
 from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib.auth.models import User
-from . import views
-
-# অটোমেটিক সুপারইউজার ট্রিক
-try:
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'foysal1234')
-except Exception:
-    pass
+from . import views  # তোর ভিউ ফাইল থেকে ফাংশনগুলো নিয়ে আসার জন্য
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # ==========================================
+    # ১. তোর ওয়েবসাইটের আগের সব রুট/লিংক (অপরিবর্তিত)
+    # ==========================================
     path('', views.home, name='home'),
-    path('product/<int:id>/', views.product_detail, name='product_detail'),
+    path('products/', views.product_list, name='product_list'),
+    path('cart/', views.cart, name='cart'),
+    
+    # এখানে যদি তোর আগের অন্য কোনো লিংক (যেমন ক্যালকুলেটর বা চ্যাট) থাকে, 
+    # সেগুলোও এই লাইনের নিচে কমা দিয়ে বসে যাবে।
+    
+    # ==========================================
+    # ২. নতুন যোগ হওয়া ৪টি পেমেন্ট রুট/লিংক
+    # ==========================================
+    path('checkout/', views.initiate_payment, name='checkout'),
+    path('payment/success/', views.payment_success, name='payment_success'),
+    path('payment/fail/', views.payment_fail, name='payment_fail'),
+    path('payment/cancel/', views.payment_cancel, name='payment_cancel'),
 ]
-
-# লাইভ সার্ভারে প্রোডাক্টের ছবি দেখানোর রাস্তা জুঁড়ে দেওয়া হলো
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

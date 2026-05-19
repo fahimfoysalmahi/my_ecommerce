@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_4000
+from django.shortcuts import render, get_object_or_404
 from django.core.management import call_command
 from .models import Product
 

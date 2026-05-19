@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foysal Store - Gamified Edition</title>
+    <style>
+        :root { --bg-color: #f8f9fa; --card-bg: #ffffff; --text-color: #333; --border-color: #eee; }
+        [data-theme="dark"] { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #f5f5f5; --border-color: #333; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.3s, color 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding-bottom: 60px; }
+        
+        .navbar { background-color: #1a1a1a; padding: 15px 20px; display: flex; flex-direction: column; gap: 10px; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { color: #2ecc71; font-size: 24px; font-weight: bold; }
+        .nav-right { display: flex; align-items: center; gap: 15px; }
+        
+        .theme-btn, .cart-icon-btn { background: #333; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .cart-icon-btn { background: #2ecc71; position: relative; }
+        .cart-count { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; }
+
+        .flash-sale-banner { background: linear-gradient(45deg, #e74c3c, #f39c12); color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; }
+        #timer { font-size: 16px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; margin-left: 5px; color: #fff; }
+
+        .search-section { text-align: center; margin: 25px 0 15px 0; padding: 0 20px; }
+        .search-form { display: flex; max-width: 500px; margin: 0 auto 15px auto; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
+        .search-input { flex-grow: 1; padding: 12px; border: 1px solid #ddd; outline: none; font-size: 15px; background: var(--card-bg); color: var(--text-color); }
+        .search-btn { background-color: #2ecc71; color: white; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        
+        .category-tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
+        .tab { background: var(--card-bg); padding: 8px 16px; border-radius: 20px; text-decoration: none; color: var(--text-color); font-size: 14px; border: 1px solid var(--border-color); cursor: pointer; }
+        .tab.active, .tab:hover { background: #2ecc71; color: white; border-color: #2ecc71; }
+
+        h1 { text-align: center; font-size: 24px; margin-top: 10px; }
+        .underline { width: 50px; height: 4px; background-color: #2ecc71; margin: 5px auto 25px auto; border-radius: 2px; }
+        
+        .delivery-notice { text-align: center; font-size: 13px; color: #e67e22; background: rgba(230, 126, 34, 0.1); padding: 6px; margin: -10px auto 20px auto; max-width: 500px; border-radius: 4px; font-weight: 500; }
+
+        .product-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; padding: 0 20px 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .product-card { background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--border-color); position: relative; }
+        
+        .badge { position: absolute; top: 10px; left: 10px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; z-index: 10; background-color: #2ecc71; }
+        .share-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+
+        .img-box { width: 100%; height: 200px; padding: 10px; display: flex; align-items: center; justify-content: center; background: white; overflow: hidden; }
+        .product-card img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s ease; }
+        .product-card:hover img { transform: scale(1.1); }
+        
+        .product-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
+        .product-title { font-size: 17px; font-weight: 600; margin-bottom: 5px; }
+        .current-price { color: #2ecc71; font-weight: bold; font-size: 18px; margin-bottom: 12px; display: block; }
+        .btn { display: block; width: 100%; background-color: #2ecc71; color: white; padding: 10px; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; text-transform: uppercase; text-align: center; border: none; cursor: pointer; }
+
+        .scratch-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 300; }
+        .scratch-container { background: #1a1a1a; padding: 25px; border-radius: 15px; text-align: center; color: white; max-width: 320px; width: 90%; position: relative; border: 2px dashed #f1c40f; }
+        .scratch-box { position: relative; width: 200px; height: 80px; margin: 20px auto; background: #fff; color: #333; font-size: 20px; font-weight: bold; line-height: 80px; border-radius: 8px; overflow: hidden; user-select: none; }
+        .scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; }
+
+        /* লাইভ কাস্টমার রিভিউ ও সাবমিশন ফরম */
+        .reviews-section { background: var(--card-bg); padding: 40px 20px; border-top: 1px solid var(--border-color); margin-top: 30px; }
+        .reviews-wrapper { max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media(min-width: 768px) { .reviews-wrapper { grid-template-columns: 1fr 1fr; } }
+        
+        .review-form-box { background: var(--bg-color); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .review-form-box h3 { margin-bottom: 15px; font-size: 18px; text-align: left; }
+        .review-form-box input, .review-form-box textarea, .review-form-box select { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 6px; background: var(--card-bg); color: var(--text-color); outline: none; }
+        
+        .review-display-box { max-height: 320px; overflow-y: auto; padding-right: 10px; }
+        .review-display-box h3 { margin-bottom: 15px; font-size: 18px; text-align: left; }
+        .user-review-card { background: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); animation: fadeIn 0.4s ease; }
+        .review-stars { color: #f1c40f; font-size: 14px; margin-bottom: 4px; }
+        .review-text { font-size: 14px; font-style: italic; margin-bottom: 5px; }
+        .review-user { font-size: 12px; font-weight: bold; color: #2ecc71; }
+
+        .cart-modal { display: none; position: fixed; top: 0; right: 0; width: 100%; max-width: 400px; height: 100%; background: var(--card-bg); box-shadow: -5px 0 15px rgba(0,0,0,0.1); z-index: 100; padding: 20px; flex-direction: column; border-left: 1px solid var(--border-color); }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .close-cart { font-size: 24px; cursor: pointer; color: var(--text-color); }
+        .cart-items { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        .cart-item button { background: none; border: none; color: red; cursor: pointer; font-weight: bold; }
+        
+        .coupon-section { display: flex; gap: 5px; margin-bottom: 15px; }
+        .coupon-input { flex-grow: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
+        .coupon-btn { background: #34495e; color: white; border: none; padding: 0 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
+        .checkout-form { display: flex; flex-direction: column; gap: 10px; }
+        .checkout-form input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; outline: none; background: var(--bg-color); color: var(--text-color); }
+
+        .purchase-toast { position: fixed; bottom: 20px; left: -350px; background: #1a1a1a; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 13px; z-index: 250; border-left: 4px solid #2ecc71; display: flex; flex-direction: column; gap: 2px; transition: left 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .purchase-toast b { color: #2ecc71; }
+        
+        .floating-call-btn { position: fixed; bottom: 20px; right: 20px; background-color: #2980b9; color: white; border: none; width: 55px; height: 55px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 24px; display: flex; align-items: center; justify-content: center; text-decoration: none; z-index: 90; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media(min-width: 480px) { .navbar { flex-direction: row; justify-content: space-between; padding: 15px 40px; } }
+    </style>
+</head>
+<body>
+
+    <div class="scratch-overlay" id="scratch-overlay">
+        <div class="scratch-container">
+            <h3 style="color:#f1c40f;">🎁 লাকি স্ক্র্যাচ কার্ড! 🎁</h3>
+            <p style="font-size: 13px; margin-top:5px; color:#bbb;">নিচের বক্সটি আঙুল দিয়ে ঘষে আপনার ডিসকাউন্ট কুপন কোডটি জিতে নিন ভাই!</p>
+            <div class="scratch-box">
+                <div id="coupon-text">FOYSAL10</div>
+                <canvas id="scratch-canvas" class="scratch-canvas" width="200" height="80"></canvas>
+            </div>
+            <button class="btn" onclick="closeScratch()" style="background:#333; font-size:12px; padding:6px;">স্টোরে প্রবেশ করুন</button>
+        </div>
+    </div>
+
+    <div class="purchase-toast" id="purchase-toast">
+        <div><b id="toast-user">Alif</b> (Singra) থেকে এইমাত্র কিনলেন!</div>
+        <div id="toast-product" style="font-weight: 500;">Casio fx-991CW</div>
+        <span style="font-size: 11px; color: #aaa;">১ মিনিট আগে</span>
+    </div>
+
+    <div class="flash-sale-banner">
+        ⚡ লিমিটেড ফ্ল্যাশ সেল! শেষ হতে বাকি আছে: <span id="timer">02:45:00</span> ⚡
+    </div>
+
+    <div class="navbar">
+        <div class="logo">Foysal Store</div>
+        <div class="nav-right">
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+            <button class="cart-icon-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cart-count">0</span></button>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <form method="GET" action="{% url 'home' %}" class="search-form">
+            <input type="text" name="search" class="search-input" placeholder="প্রোডাক্টের নাম লিখে খুঁজুন..." value="{{ query|default:'' }}">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+        
+        <div class="category-tabs">
+            <button class="tab active" onclick="filterCategory('all')">All</button>
+            <button class="tab" onclick="filterCategory('mobiles')">Mobiles</button>
+            <button class="tab" onclick="filterCategory('calculators')">Calculators</button>
+            <button class="tab" onclick="filterCategory('electronics')">Electronics</button>
+        </div>
+    </div>
+
+    <h1>আমাদের প্রোডাক্ট কালেকশন</h1>
+    <div class="underline"></div>
+
+    <div class="delivery-notice">
+        🚚 আজ অর্ডার করলে নাটোর ও সিংড়ায় ডেলিভারি পাবেন: <span id="delivery-date">ক্যালকুলেট হচ্ছে...</span> এর মধ্যে!
+    </div>
+
+    <div class="product-container" id="product-grid">
+        {% for product in products %}
+            <div class="product-card" data-category="{{ product.category|default:'others' }}">
+                <button class="share-btn" onclick="shareProduct('{{ product.name }}')" title="Share Product">🔗</button>
+                <span class="badge">In Stock</span>
+                <div class="img-box">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/220x200?text=No+Image" alt="No Image">
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <span class="current-price">৳{{ product.price }}</span>
+                    <button class="btn" onclick="addToCart('{{ product.name }}', '{{ product.price }}')">+ Cart</button>
+                </div>
+            </div>
+        {% empty %}
+            <p style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px 0;">কোনো প্রোডাক্ট পাওয়া যায়নি ভাই!</p>
+        {% endfor %}
+    </div>
+
+    <div class="reviews-section">
+        <h2 style="text-align: center; font-size: 22px; margin-bottom: 5px;">গ্রাহকদের লাইভ মতামত ও রিভিউ ⭐</h2>
+        <div class="underline" style="margin-bottom: 30px;"></div>
+        
+        <div class="reviews-wrapper">
+            <div class="review-form-box">
+                <h3>তোমার একটি রিভিউ দাও ভাই 📝</h3>
+                <input type="text" id="rev-name" placeholder="তোমার নাম..." required>
+                <input type="text" id="rev-loc" placeholder="তোমার এলাকা (উদাঃ সিংড়া, নাটোর)..." required>
+                <select id="rev-rating">
+                    <option value="5">⭐⭐⭐⭐⭐ (৫ স্টার)</option>
+                    <option value="4">⭐⭐⭐⭐ (৪ স্টার)</option>
+                    <option value="3">⭐⭐⭐ (৩ স্টার)</option>
+                    <option value="2">⭐⭐ (২ স্টার)</option>
+                    <option value="1">⭐ (১ স্টার)</option>
+                </select>
+                <textarea id="rev-msg" rows="3" placeholder="প্রোডাক্ট ও সার্ভিস কেমন লেগেছে লিখো..." required></textarea>
+                <button class="btn" onclick="submitLiveReview()">রিভিউ সাবমিট করো</button>
+            </div>
+
+            <div>
+                <h3>সব রিভিউসমূহ 💬</h3>
+                <div class="review-display-box" id="review-list-container">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h3>তোমার শপিং কার্ট 🛒</h3>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="coupon-section">
+            <input type="text" id="coupon-code" class="coupon-input" placeholder="কুপন কোড (FOYSAL10)">
+            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div style="margin-bottom: 5px; font-size: 14px; color: #888; display: none;" id="discount-row">
+            ডিসকাউন্ট: -৳<span id="cart-discount">0</span>
+        </div>
+        <div style="margin-bottom: 15px; font-weight: bold; font-size: 16px;">
+            মোট দাম: ৳<span id="cart-total">0</span>
+        </div>
+        <div class="checkout-form">
+            <input type="text" id="cust-name" placeholder="তোমার নাম লিখো..." required>
+            <input type="text" id="cust-phone" placeholder="মোবাইল নাম্বার..." required>
+            <input type="text" id="cust-address" placeholder="পূর্ণ ঠিকানা লিখো..." required>
+            <button class="btn" onclick="sendOrder()">💬 WhatsApp এ অর্ডার করো</button>
+        </div>
+    </div>
+
+    <a href="tel:+8801755280967" class="floating-call-btn" title="সরাসরি কল করুন">📞</a>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('foysal_cart')) || [];
+        let discount = 0;
+
+        // ডিফল্ট রিভিউ ডাটা (যদি লোড করার মতো কিছু না থাকে)
+        const defaultReviews = [
+            { name: "Alif", loc: "Singra", rating: 5, msg: "সিংড়াতে এত দ্রুত Casio fx-991CW ডেলিভারি পাবো ভাবিনি। ফয়সাল ভাই বেস্ট!" },
+            { name: "Shyla", loc: "Natore", rating: 5, msg: "এখানকার লিকুইড ক্রিস্টাল ডিসপ্লে সহ ক্যালকুলেটরগুলো অরিজিনাল ও বাজেট ফ্রেন্ডলি।" }
+        ];
+
+        // রিভিউ লোড করার ফাংশন
+        function loadReviews() {
+            let userReviews = JSON.parse(localStorage.getItem('foysal_live_reviews'));
+            if (!userReviews) {
+                userReviews = defaultReviews;
+                localStorage.setItem('foysal_live_reviews', JSON.stringify(userReviews));
+            }
+            
+            const container = document.getElementById('review-list-container');
+            container.innerHTML = '';
+            
+            userReviews.forEach(rev => {
+                let stars = '⭐'.repeat(rev.rating);
+                container.innerHTML += `
+                    <div class="user-review-card">
+                        <div class="review-stars">${stars}</div>
+                        <p class="review-text">"${rev.msg}"</p>
+                        <div class="review-user">- ${rev.name}, ${rev.loc}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // নতুন লাইভ রিভিউ সাবমিট করার ফাংশন
+        function submitLiveReview() {
+            const name = document.getElementById('rev-name').value.trim();
+            const loc = document.getElementById('rev-loc').value.trim();
+            const rating = parseInt(document.getElementById('rev-rating').value);
+            const msg = document.getElementById('rev-msg').value.trim();
+
+            if (!name || !loc || !msg) {
+                alert('রিভিউ দেওয়ার জন্য সব ঘর পূরণ করো ভাই!');
+                return;
+            }
+
+            let userReviews = JSON.parse(localStorage.getItem('foysal_live_reviews')) || defaultReviews;
+            
+            // নতুন রিভিউ সবার ওপরে যোগ করা (Unshift)
+            userReviews.unshift({ name: name, loc: loc, rating: rating, msg: msg });
+            localStorage.setItem('foysal_live_reviews', JSON.stringify(userReviews));
+            
+            // ফর্ম খালি করা
+            document.getElementById('rev-name').value = '';
+            document.getElementById('rev-loc').value = '';
+            document.getElementById('rev-msg').value = '';
+            
+            alert('ধন্যবাদ ভাই! তোমার লাইভ রিভিউটি সফলভাবে সাইটে যুক্ত হয়েছে।');
+            loadReviews(); // রিভিউ লিস্ট রিফ্রেশ করা
+        }
+
+        // স্ক্র্যাচ কার্ড কুপন মেকানিজম
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#95a5a6';
+        ctx.fillRect(0, 0, 200, 80);
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px Arial';
+        ctx.fillText('এখানে ঘষুন ভাই', 50, 45);
+
+        let isDrawing = false;
+        function scratch(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchmove', scratch);
+
+        function closeScratch() { document.getElementById('scratch-overlay').style.display = 'none'; }
+
+        // ডেলিভারি ডেট কাউন্টার (২ দিন পরের হিসাব)
+        const banglaMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 2);
+        document.getElementById('delivery-date').innerText = `${deliveryDate.getDate()} ${banglaMonths[deliveryDate.getMonth()]} ${deliveryDate.getFullYear()}`;
+
+        function shareProduct(name) {
+            navigator.clipboard.writeText(window.location.href);
+            alert('"' + name + '" প্রোডাক্টের লিংক সাকসেসফুলি কপি হয়েছে ভাই!');
+        }
+
+        const dummyNames = ["Alif", "Shyla", "Sabbir", "Tamim", "Mitu", "Asif"];
+        const dummyLocations = ["Singra", "Natore", "Dhaka", "Rajshahi", "Bogura"];
+        const dummyProducts = ["Casio fx-991CW", "Casio fx-100MS", "18650 Battery Pack", "Rechargeable Fan"];
+
+        function showPurchaseToast() {
+            const toast = document.getElementById('purchase-toast');
+            const randomName = dummyNames[Math.floor(Math.random() * dummyNames.length)];
+            const randomLoc = dummyLocations[Math.floor(Math.random() * dummyLocations.length)];
+            const randomProd = dummyProducts[Math.floor(Math.random() * dummyProducts.length)];
+            
+            toast.querySelector('div:first-child').innerHTML = `<b>${randomName}</b> (${randomLoc}) থেকে এইমাত্র কিনলেন!`;
+            document.getElementById('toast-product').innerText = randomProd;
+            
+            toast.style.left = "20px";
+            setTimeout(() => { toast.style.left = "-350px"; }, 4000);
+        }
+        setInterval(showPurchaseToast, 12000);
+
+        function filterCategory(category) {
+            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            const cards = document.querySelectorAll('#product-grid .product-card');
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                card.style.display = (category === 'all' || cardCat === category) ? 'flex' : 'none';
+            });
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('coupon-code').value.trim();
+            if(cart.length === 0) { alert('কার্ট খালি থাকলে কুপন কাজ করবে না ভাই!'); return; }
+            if (code === "FOYSAL10") {
+                discount = 100; alert('অভিনন্দন ভাই! ১০০ টাকা ডিসকাউন্ট যোগ হয়েছে।'); updateCartUI();
+            } else { alert('ভুল কুপন কোড ভাই!'); }
+        }
+
+        let totalSeconds = 3 * 60 * 60;
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            setInterval(() => {
+                if (totalSeconds <= 0) { timerElement.innerText = "সময় শেষ!"; return; }
+                totalSeconds--;
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+                timerElement.innerText = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+            }, 1000);
+        }
+        
+        window.onload = function() {
+            startTimer();
+            loadReviews(); // সাইট লোড হওয়ার সাথে সাথে রিভিউ লোড হবে
+        };
+
+        function updateCartUI() {
+            localStorage.setItem('foysal_cart', JSON.stringify(cart));
+            document.getElementById('cart-count').innerText = cart.length;
+            const itemsContainer = document.getElementById('cart-items');
+            itemsContainer.innerHTML = '';
+            let total = 0;
+            if(cart.length === 0) {
+                itemsContainer.innerHTML = '<p style="color:#888; text-align:center;">কার্ট খালি আছে ভাই!</p>';
+                discount = 0;
+            } else {
+                cart.forEach((item, index) => {
+                    total += parseFloat(item.price);
+                    itemsContainer.innerHTML += `<div class="cart-item"><span>${item.name} (৳${item.price})</span><button onclick="removeFromCart(${index})">✕</button></div>`;
+                });
+            }
+            if(discount > 0 && total > discount) {
+                document.getElementById('discount-row').style.display = 'block';
+                document.getElementById('cart-discount').innerText = discount;
+                total = total - discount;
+            } else { document.getElementById('discount-row').style.display = 'none'; }
+            document.getElementById('cart-total').innerText = total;
+        }
+
+        function addToCart(name, price) { cart.push({name: name, price: price}); updateCartUI(); }
+        function removeFromCart(index) { cart.splice(index, 1); if(cart.length === 0) discount = 0; updateCartUI(); }
+        function toggleCart() { const modal = document.getElementById('cart-modal'); modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex'; }
+        function toggleTheme() { const currentTheme = document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark'); }
+
+        function sendOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const address = document.getElementById('cust-address').value;
+            if(!name || !phone || !address) { alert('সব তথ্য সঠিকভাবে দে ভাই!'); return; }
+            if(cart.length === 0) { alert('কার্ট তো খালি ভাই!'); return; }
+            const orderID = 'FS-' + Math.floor(100000 + Math.random() * 900000);
+            let productList = cart.map(item => `- ${item.name} (৳${item.price})`).join('%0A');
+            let total = document.getElementById('cart-total').innerText;
+            let whatsappNumber = "8801755280967"; 
+            let text = `🔥 *নতুন অর্ডার কনফার্ম* 🔥%0A🆔 *অর্ডার আইডি:* ${orderID}%0A%0A*কাস্টমারের তথ্য:*%0A👤 নাম: ${name}%0A📞 ফোন: ${phone}%0A📍 ঠিকানা: ${address}%0A%0A*প্রোডাক্টসমূহ:*%0A${productList}%0A%0A🎁 কুপন ডিসকাউন্ট: ৳${discount}%0A💰 *সর্বমোট দাম:* ৳${total}`;
+            window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
+            cart = []; discount = 0; updateCartUI(); toggleCart();
+        }
+    </script>
+</body>
+</html>

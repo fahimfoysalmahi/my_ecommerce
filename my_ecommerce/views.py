@@ -1,25 +1,19 @@
-from django.shortcuts import render, get_object_or_404
-from my_ecommerce.models import Product
+from django.shortcuts import render, get_object_or_4000
+from django.core.management import call_command
+from .models import Product
 
+# ব্যাকএন্ডে রেন্ডার সার্ভার চালু হওয়ার সাথে সাথে ডাটাবেজ টেবিল তৈরি করার ট্রিক
+try:
+    call_command('migrate', interactive=False)
+except Exception as e:
+    print("Migration failed:", e)
+
+# হোমপেজের ভিউ ফাংশন
 def home(request):
     products = Product.objects.all()
-    
-    # সার্চ ফিল্টার
-    query = request.GET.get('search')
-    if query:
-        products = products.filter(name__icontains=query)
-        
-    # ক্যাটাগরি ফিল্টার
-    cat_filter = request.GET.get('category')
-    if cat_filter:
-        products = products.filter(category=cat_filter)
-        
-    return render(request, 'home.html', {
-        'products': products, 
-        'query': query,
-        'cat_filter': cat_filter
-    })
+    return render(request, 'home.html', {'products': products})
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+# প্রোডাক্ট ডিটেইলস পেজের ভিউ ফাংশন
+def product_detail(request, id):
+    product = get_object_or_404(Product, id=id)
     return render(request, 'product_detail.html', {'product': product})

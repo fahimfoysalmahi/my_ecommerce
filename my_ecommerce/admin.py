@@ -1,8 +1,9 @@
 from django.contrib import admin
 from .models import Product
 
-@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'category', 'in_stock')
-    list_filter = ('category', 'in_stock')
+    list_display = ('name', 'price', 'original_price', 'category')
+    list_filter = ('category',)  # এখান থেকে ভুল 'in_stock' চিরতরে হাওয়া
     search_fields = ('name', 'description')
+
+admin.site.register(Product, ProductAdmin)

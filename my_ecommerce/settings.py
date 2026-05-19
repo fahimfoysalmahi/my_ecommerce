@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-svmbw3$mmct$)wa$^ac!n9hzgkn5n_4yvhh&fqz^gjpg2g3dzz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['foysalonlinestore.onrender.com', '127.0.0.1', 'localhost']
+
 
 
 # Application definition
